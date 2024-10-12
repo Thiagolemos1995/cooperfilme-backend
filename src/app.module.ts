@@ -29,7 +29,12 @@ import { DatabaseConfig } from './common/utils';
         }
 
         return {
-          ...databaseConfig,
+          type: 'postgres',
+          host: databaseConfig.host ?? 'localhost',
+          port: databaseConfig.port ?? 5435,
+          username: databaseConfig.user ?? 'cooperfilme',
+          password: databaseConfig.password ?? 'cooperfilme',
+          database: databaseConfig.database ?? 'cooperfilme_db',
         };
       },
     }),
