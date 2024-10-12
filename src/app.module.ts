@@ -8,6 +8,7 @@ import { configurations } from './config/configurations';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from './common/utils';
+import { Users } from './users/entities';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { DatabaseConfig } from './common/utils';
           username: databaseConfig.user ?? 'cooperfilme',
           password: databaseConfig.password ?? 'cooperfilme',
           database: databaseConfig.database ?? 'cooperfilme_db',
+          entities: [Users],
         };
       },
     }),

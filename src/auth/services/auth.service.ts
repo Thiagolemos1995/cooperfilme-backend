@@ -2,24 +2,38 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/services';
 import { SignInDto } from '../dtos';
+import { Logger } from '@nestjs/common';
 import { TokenResponse } from '../interfaces';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly jwtService: JwtService,
-    private usersService: UsersService,
+    private readonly usersService: UsersService,
   ) {}
 
   async signIn(params: SignInDto): Promise<TokenResponse> {
     const { username, password } = params;
+
+    this.logger.log(`username: ${username} is signing in`);
+
     const user = await this.usersService.findOne(username);
-    if (user?.password !== password) {
+    if (!user) {
+      this.logger.error(`username: ${username} failed to sign in`);
       throw new UnauthorizedException();
     }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      this.logger.error(`username: ${username} failed to sign in`);
+      throw new UnauthorizedException();
+    }
+
     const payload = {
       username: user.username,
-      sub: user.userId,
+      sub: user.id,
       role: user.role,
     };
 
@@ -32,6 +46,7 @@ export class AuthService {
       exp: number;
     };
 
+    this.logger.log(`username: ${username} is signed in`);
     return {
       access_token: accessToken,
       iat: decodedToken.iat,

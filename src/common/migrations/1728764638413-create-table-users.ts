@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 export class Migration1728764638413 implements MigrationInterface {
   name = 'Migration1728764638413';
@@ -10,14 +11,19 @@ export class Migration1728764638413 implements MigrationInterface {
     await queryRunner.query(
       `CREATE TABLE "users" ("id" SERIAL NOT NULL, "username" character varying(255) NOT NULL, "password" character varying(255) NOT NULL, "role" "public"."users_role_enum" NOT NULL DEFAULT 'analyst', "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP DEFAULT now(), "deleted_at" TIMESTAMP, CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
     );
+
+    const saltRounds = 10;
+    const analystPassword = await bcrypt.hash('analyst123', saltRounds);
+    const reviewerPassword = await bcrypt.hash('reviewer123', saltRounds);
+    const approverPassword = await bcrypt.hash('approver123', saltRounds);
     await queryRunner.query(
-      `INSERT INTO "users" (username, password, role) VALUES ('analyst@cooperfilme.com', 'analyst123', 'analyst')`,
+      `INSERT INTO "users" (username, password, role) VALUES ('analyst@cooperfilme.com', '${analystPassword}', 'analyst')`,
     );
     await queryRunner.query(
-      `INSERT INTO "users" (username, password, role) VALUES ('reviewer@cooperfilme.com', 'reviewer123', 'reviewer')`,
+      `INSERT INTO "users" (username, password, role) VALUES ('reviewer@cooperfilme.com', '${reviewerPassword}', 'reviewer')`,
     );
     await queryRunner.query(
-      `INSERT INTO "users" (username, password, role) VALUES ('approver@cooperfilme.com', 'approver123', 'approver')`,
+      `INSERT INTO "users" (username, password, role) VALUES ('approver@cooperfilme.com', '${approverPassword}', 'approver')`,
     );
   }
 
