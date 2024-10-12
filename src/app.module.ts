@@ -5,6 +5,9 @@ import { AuthModule } from './auth/modules';
 import { UsersModule } from './users/module';
 import { ConfigModule } from '@nestjs/config';
 import { configurations } from './config/configurations';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { DatabaseConfig } from './common/utils';
 
 @Module({
   imports: [
@@ -14,6 +17,21 @@ import { configurations } from './config/configurations';
       isGlobal: true,
       load: [configurations],
       envFilePath: '.env',
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const databaseConfig = configService.get<DatabaseConfig>('database');
+
+        if (!databaseConfig) {
+          throw new Error('Database configuration not found');
+        }
+
+        return {
+          ...databaseConfig,
+        };
+      },
     }),
   ],
   controllers: [AppController],

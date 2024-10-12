@@ -1,15 +1,13 @@
 import { DataSource } from 'typeorm';
 
-export const AppDataSource = new DataSource({
+export default new DataSource({
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'cooperfilme',
-  password: 'cooperfilme',
-  database: 'cooperfilme_db',
-  synchronize: true,
-  logging: false,
-  entities: ['src/entity/**/*.ts'],
-  migrations: ['src/migration/**/*.ts'],
-  subscribers: ['src/subscriber/**/*.ts'],
+  host: process.env.DATABASE_HOST || 'localhost',
+  port: parseInt(process.env.DATABASE_PORT) || 5435,
+  username: process.env.DATABASE_USER || 'cooperfilme',
+  password: process.env.DATABASE_PASSWORD || 'cooperfilme',
+  database: process.env.DATABASE_DB || 'cooperfilme_db',
+  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  migrations: [__dirname + '/**/**/migrations/*.ts'],
+  synchronize: false,
 });
