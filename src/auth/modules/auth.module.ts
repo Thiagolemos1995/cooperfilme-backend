@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/services';
 import { JWTConfig } from 'src/common/utils';
 import { UsersRepository } from 'src/users/repositories';
+import { SigninUserUseCase } from '../usecases';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { UsersRepository } from 'src/users/repositories';
       },
     }),
   ],
-  providers: [AuthService, UsersService, UsersRepository],
+  providers: [AuthService, UsersService, UsersRepository, SigninUserUseCase],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -9,11 +9,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from './common/utils';
 import { Users } from './users/entities';
+import { ScriptModule } from './script/modules';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
+    ScriptModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configurations],
