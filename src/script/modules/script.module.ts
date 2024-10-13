@@ -2,7 +2,11 @@ import { Module } from '@nestjs/common';
 import { ScriptController } from '../controllers';
 import { ScriptService } from '../services';
 import { ScriptRepository } from '../repositories';
-import { FindAllScriptsUseCase, SendScriptUseCase } from '../usecases';
+import {
+  FindAllScriptsUseCase,
+  FindScriptByIdUseCase,
+  SendScriptUseCase,
+} from '../usecases';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Script, ScriptState } from '../entities';
 
@@ -14,6 +18,7 @@ import { Script, ScriptState } from '../entities';
     ScriptRepository,
     SendScriptUseCase,
     FindAllScriptsUseCase,
+    FindScriptByIdUseCase,
   ],
 })
 export class ScriptModule {}

@@ -3,6 +3,7 @@ import { CreateScriptDto, ScriptFilter } from '../dtos';
 import { Script, ScriptState } from '../entities';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EScriptState } from '../enums';
+import { QueryParams } from 'src/users/dtos';
 
 interface IWhereOptions {
   where: {
@@ -74,6 +75,42 @@ export class ScriptRepository {
       });
 
       return scripts;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async findScriptNamesAndStatuses(
+    params: QueryParams,
+  ): Promise<{ title: string; status: EScriptState }[]> {
+    const em = this.dataSource.createEntityManager();
+    const { order, skip, take } = params;
+
+    try {
+      const scripts = await em.find(Script, {
+        select: ['title'],
+        skip,
+        take,
+        order: {
+          createdAt: order ?? 'DESC',
+        },
+      });
+
+      return scripts.map((script) => ({
+        title: script.title,
+        status: script.status,
+      }));
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async findById(id: string): Promise<Script | null> {
+    const em = this.dataSource.createEntityManager();
+
+    try {
+      const script = await em.findOne(Script, { where: { id } });
+      return script;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

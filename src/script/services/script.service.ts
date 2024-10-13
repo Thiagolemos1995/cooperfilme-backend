@@ -18,4 +18,9 @@ export class ScriptService {
     this.logger.log('Fetching scripts');
     return await this.scriptRepository.findAll(params);
   }
+
+  async findById(id: string): Promise<Script> {
+    this.logger.log(`Searching for a script with id: ${id}`);
+    return await this.scriptRepository.findById(id);
+  }
 }
