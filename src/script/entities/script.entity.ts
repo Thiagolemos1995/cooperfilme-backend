@@ -6,6 +6,9 @@ import { ScriptState } from './script-state.entity';
 @Entity()
 export class Script extends BaseEntity {
   @Column()
+  email: string;
+
+  @Column()
   title: string;
 
   @Column()

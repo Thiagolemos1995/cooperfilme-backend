@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from './common/utils';
 import { Users } from './users/entities';
 import { ScriptModule } from './script/modules';
+import { Script, ScriptState } from './script/entities';
 
 @Module({
   imports: [
@@ -38,7 +39,7 @@ import { ScriptModule } from './script/modules';
           username: databaseConfig.user ?? 'cooperfilme',
           password: databaseConfig.password ?? 'cooperfilme',
           database: databaseConfig.database ?? 'cooperfilme_db',
-          entities: [Users],
+          entities: [Users, Script, ScriptState],
         };
       },
     }),
