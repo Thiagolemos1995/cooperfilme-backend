@@ -1,9 +1,16 @@
 import { Between, DataSource, FindOperator, ILike } from 'typeorm';
-import { CreateScriptDto, ScriptFilter } from '../dtos';
+import {
+  CreateScriptDto,
+  ScriptFilter,
+  ScriptStatusResponseDto,
+} from '../dtos';
 import { Script, ScriptState } from '../entities';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { EScriptState } from '../enums';
-import { QueryParams } from 'src/users/dtos';
 
 interface IWhereOptions {
   where: {
@@ -80,26 +87,29 @@ export class ScriptRepository {
     }
   }
 
-  async findScriptNamesAndStatuses(
-    params: QueryParams,
-  ): Promise<{ title: string; status: EScriptState }[]> {
+  async findScriptStatusById(id: string): Promise<ScriptStatusResponseDto> {
     const em = this.dataSource.createEntityManager();
-    const { order, skip, take } = params;
 
     try {
-      const scripts = await em.find(Script, {
-        select: ['title'],
-        skip,
-        take,
-        order: {
-          createdAt: order ?? 'DESC',
-        },
+      const script = await em.findOne(Script, {
+        select: ['status', 'email', 'title', 'author', 'createdAt', 'genre'],
+        where: { id },
       });
 
-      return scripts.map((script) => ({
+      if (!script) {
+        throw new NotFoundException('Script not found');
+      }
+
+      const scriptStatusResponseDto = new ScriptStatusResponseDto({
         title: script.title,
+        author: script.author,
+        genre: script.genre,
+        email: script.email,
         status: script.status,
-      }));
+        createdAt: script.createdAt,
+      });
+
+      return scriptStatusResponseDto;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

@@ -13,8 +13,13 @@ import {
   SendScriptUseCase,
   FindScriptByIdUseCase,
   UpdateScriptStatusUseCase,
+  GetScriptStatusUseCase,
 } from '../usecases';
-import { CreateScriptDto, ScriptFilter } from '../dtos';
+import {
+  CreateScriptDto,
+  ScriptFilter,
+  ScriptStatusResponseDto,
+} from '../dtos';
 import { EScriptState } from '../enums';
 
 @Controller('script')
@@ -24,11 +29,19 @@ export class ScriptController {
     private readonly findAllScripts: FindAllScriptsUseCase,
     private readonly findScriptById: FindScriptByIdUseCase,
     private readonly updateScriptStatusUseCase: UpdateScriptStatusUseCase,
+    private readonly getScriptStatusUseCase: GetScriptStatusUseCase,
   ) {}
 
   @Get()
   async fetchScripts(@Param() params: ScriptFilter) {
     return await this.findAllScripts.execute(params);
+  }
+
+  @Get(':id/status')
+  async getScriptStatus(
+    @Param('id') id: string,
+  ): Promise<ScriptStatusResponseDto> {
+    return await this.getScriptStatusUseCase.execute(id);
   }
 
   @Get(':id')

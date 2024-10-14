@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateScriptDto, ScriptFilter } from '../dtos';
+import {
+  CreateScriptDto,
+  ScriptFilter,
+  ScriptStatusResponseDto,
+} from '../dtos';
 import { Script } from '../entities';
 import { ScriptRepository } from '../repositories';
 import { Logger } from '@nestjs/common';
@@ -18,6 +22,11 @@ export class ScriptService {
   async findAll(params: ScriptFilter): Promise<[Script[], number]> {
     this.logger.log('Fetching scripts');
     return await this.scriptRepository.findAll(params);
+  }
+
+  async getScriptStatusById(id: string): Promise<ScriptStatusResponseDto> {
+    this.logger.log(`Fetching status for script with id: ${id}`);
+    return await this.scriptRepository.findScriptStatusById(id);
   }
 
   async findById(id: string): Promise<Script> {
