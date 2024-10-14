@@ -20,6 +20,9 @@ export class Script extends BaseEntity {
   @Column('text')
   content: string;
 
+  @Column({ default: 0 })
+  votes: number;
+
   @Column({
     type: 'enum',
     enum: EScriptState,

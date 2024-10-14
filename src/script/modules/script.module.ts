@@ -8,6 +8,7 @@ import {
   SendScriptUseCase,
   UpdateScriptStatusUseCase,
   GetScriptStatusUseCase,
+  VoteScriptUseCase,
 } from '../usecases';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Script, ScriptState } from '../entities';
@@ -25,6 +26,7 @@ import { JwtService } from '@nestjs/jwt';
     FindScriptByIdUseCase,
     UpdateScriptStatusUseCase,
     GetScriptStatusUseCase,
+    VoteScriptUseCase,
   ],
 })
 export class ScriptModule {}

@@ -3,6 +3,7 @@ import {
   CreateScriptDto,
   ScriptFilter,
   ScriptStatusResponseDto,
+  VoteDto,
 } from '../dtos';
 import { Script } from '../entities';
 import { ScriptRepository } from '../repositories';
@@ -40,5 +41,12 @@ export class ScriptService {
   ): Promise<Script> {
     this.logger.log(`Updating status of script with id: ${id} to ${newStatus}`);
     return await this.scriptRepository.updateScriptStatus(id, newStatus);
+  }
+
+  async voteOnScript(payload: VoteDto): Promise<Script> {
+    this.logger.log(
+      `Voting on script with id: ${payload.id}, vote: ${payload.vote}`,
+    );
+    return await this.scriptRepository.voteOnScript(payload);
   }
 }

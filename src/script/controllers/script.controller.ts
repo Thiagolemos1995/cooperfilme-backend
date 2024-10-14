@@ -15,13 +15,14 @@ import {
   FindScriptByIdUseCase,
   UpdateScriptStatusUseCase,
   GetScriptStatusUseCase,
+  VoteScriptUseCase,
 } from '../usecases';
 import {
   CreateScriptDto,
   ScriptFilter,
   ScriptStatusResponseDto,
 } from '../dtos';
-import { EScriptState } from '../enums';
+import { EScriptState, VoteEnum } from '../enums';
 import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('script')
@@ -32,6 +33,7 @@ export class ScriptController {
     private readonly findScriptById: FindScriptByIdUseCase,
     private readonly updateScriptStatusUseCase: UpdateScriptStatusUseCase,
     private readonly getScriptStatusUseCase: GetScriptStatusUseCase,
+    private readonly voteScriptUseCase: VoteScriptUseCase,
   ) {}
 
   @UseGuards(AuthGuard)
@@ -66,5 +68,11 @@ export class ScriptController {
     @Body('status') newStatus: EScriptState,
   ) {
     return await this.updateScriptStatusUseCase.execute({ id, newStatus });
+  }
+
+  @UseGuards(AuthGuard)
+  @Post(':id/vote')
+  async voteOnScript(@Param('id') id: string, @Body('vote') vote: VoteEnum) {
+    return await this.voteScriptUseCase.executeVote({ id, vote });
   }
 }

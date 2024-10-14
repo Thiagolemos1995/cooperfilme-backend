@@ -3,14 +3,16 @@ import {
   CreateScriptDto,
   ScriptFilter,
   ScriptStatusResponseDto,
+  VoteDto,
 } from '../dtos';
 import { Script, ScriptState } from '../entities';
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { EScriptState } from '../enums';
+import { EScriptState, VoteEnum } from '../enums';
 
 interface IWhereOptions {
   where: {
@@ -142,6 +144,45 @@ export class ScriptRepository {
       }
 
       script.status = newStatus;
+      await queryRunner.manager.save(script);
+
+      await queryRunner.commitTransaction();
+
+      return script;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async voteOnScript(payload: VoteDto): Promise<Script> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const { id, vote } = payload;
+
+    try {
+      const script = await queryRunner.manager.findOne(Script, {
+        where: { id },
+      });
+
+      if (!script) {
+        throw new NotFoundException('Script not found');
+      }
+
+      if (vote === VoteEnum.UP) {
+        script.votes += 1;
+      } else if (vote === VoteEnum.DOWN) {
+        if (script.votes <= 0) {
+          throw new BadRequestException('Script dont have votes');
+        }
+        script.votes -= 1;
+      }
+
       await queryRunner.manager.save(script);
 
       await queryRunner.commitTransaction();
