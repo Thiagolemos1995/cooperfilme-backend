@@ -30,6 +30,9 @@ export class Script extends BaseEntity {
   })
   status: EScriptState;
 
+  @Column({ type: 'text', nullable: true })
+  message: string;
+
   @OneToMany(() => ScriptState, (state) => state.script)
   states: ScriptState[];
 

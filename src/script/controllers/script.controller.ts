@@ -66,8 +66,13 @@ export class ScriptController {
   async updateScriptStatus(
     @Param('id') id: string,
     @Body('status') newStatus: EScriptState,
+    @Body('message') message?: string,
   ) {
-    return await this.updateScriptStatusUseCase.execute({ id, newStatus });
+    return await this.updateScriptStatusUseCase.execute({
+      id,
+      newStatus,
+      message,
+    });
   }
 
   @UseGuards(AuthGuard)

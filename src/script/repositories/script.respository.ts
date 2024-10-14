@@ -136,6 +136,7 @@ export class ScriptRepository {
   async updateScriptStatus(
     id: string,
     newStatus: EScriptState,
+    message?: string,
   ): Promise<Script> {
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -151,7 +152,12 @@ export class ScriptRepository {
         throw new Error('Script not found');
       }
 
+      if (script.status === EScriptState.IN_REVIEW && !message) {
+        throw new BadRequestException('Message is required');
+      }
+
       script.status = newStatus;
+      script.message = message;
       await queryRunner.manager.save(script);
 
       const scriptStateEntity = new ScriptState({
@@ -189,13 +195,26 @@ export class ScriptRepository {
         throw new NotFoundException('Script not found');
       }
 
-      if (script.status !== EScriptState.AWAITING_APPROVAL) {
+      if (
+        script.status !== EScriptState.AWAITING_APPROVAL &&
+        script.status !== EScriptState.IN_APPROVAL
+      ) {
         throw new BadRequestException(
-          'Script is not awaiting approval to be voted',
+          'Script is not awaiting approval or in approval to be voted',
         );
       }
 
       if (vote === VoteEnum.UP) {
+        script.status = EScriptState.IN_APPROVAL;
+        await queryRunner.manager.save(script);
+
+        const scriptStateEntity = new ScriptState({
+          script,
+          state: script.status,
+        });
+
+        await queryRunner.manager.save(scriptStateEntity);
+
         script.votes += 1;
       } else if (vote === VoteEnum.DOWN) {
         script.status = EScriptState.REJECTED;

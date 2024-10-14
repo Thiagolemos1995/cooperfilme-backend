@@ -51,6 +51,7 @@ export class ScriptService {
   async updateScriptStatus(
     id: string,
     newStatus: EScriptState,
+    message?: string,
   ): Promise<Script> {
     this.logger.debug(
       `Updating status of script with id: ${id} to ${newStatus}`,
@@ -93,6 +94,7 @@ export class ScriptService {
     const script = await this.scriptRepository.updateScriptStatus(
       id,
       newStatus,
+      message,
     );
 
     this.logger.log(`Script status updated to ${newStatus}`);

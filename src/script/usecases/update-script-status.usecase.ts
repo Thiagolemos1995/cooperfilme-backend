@@ -12,17 +12,23 @@ import {
 
 @Injectable()
 export class UpdateScriptStatusUseCase
-  implements UseCase<{ id: string; newStatus: EScriptState }, Script>
+  implements
+    UseCase<{ id: string; newStatus: EScriptState; message?: string }, Script>
 {
   constructor(private readonly scriptService: ScriptService) {}
 
   async execute(payload: {
     id: string;
     newStatus: EScriptState;
+    message?: string;
   }): Promise<Script> {
-    const { id, newStatus } = payload;
+    const { id, newStatus, message } = payload;
     try {
-      return await this.scriptService.updateScriptStatus(id, newStatus);
+      return await this.scriptService.updateScriptStatus(
+        id,
+        newStatus,
+        message,
+      );
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
