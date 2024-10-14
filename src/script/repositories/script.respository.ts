@@ -47,7 +47,12 @@ export class ScriptRepository {
 
       await em.save(scriptStateEntity);
 
-      return script;
+      const scriptResponse = new Script({
+        id: script.id,
+        ...script,
+      });
+
+      return scriptResponse;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -118,7 +123,10 @@ export class ScriptRepository {
     const em = this.dataSource.createEntityManager();
 
     try {
-      const script = await em.findOne(Script, { where: { id } });
+      const script = await em.findOne(Script, {
+        where: { id },
+        relations: ['states'],
+      });
       return script;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
@@ -145,6 +153,13 @@ export class ScriptRepository {
 
       script.status = newStatus;
       await queryRunner.manager.save(script);
+
+      const scriptStateEntity = new ScriptState({
+        script,
+        state: script.status,
+      });
+
+      await queryRunner.manager.save(scriptStateEntity);
 
       await queryRunner.commitTransaction();
 
@@ -174,13 +189,41 @@ export class ScriptRepository {
         throw new NotFoundException('Script not found');
       }
 
+      if (script.status !== EScriptState.AWAITING_APPROVAL) {
+        throw new BadRequestException(
+          'Script is not awaiting approval to be voted',
+        );
+      }
+
       if (vote === VoteEnum.UP) {
         script.votes += 1;
       } else if (vote === VoteEnum.DOWN) {
+        script.status = EScriptState.REJECTED;
+        await queryRunner.manager.save(script);
+
+        const scriptStateEntity = new ScriptState({
+          script,
+          state: script.status,
+        });
+
+        await queryRunner.manager.save(scriptStateEntity);
+
         if (script.votes <= 0) {
           throw new BadRequestException('Script dont have votes');
         }
         script.votes -= 1;
+      }
+
+      if (script.votes >= 3) {
+        script.status = EScriptState.APPROVED;
+        await queryRunner.manager.save(script);
+
+        const scriptStateEntity = new ScriptState({
+          script,
+          state: script.status,
+        });
+
+        await queryRunner.manager.save(scriptStateEntity);
       }
 
       await queryRunner.manager.save(script);
