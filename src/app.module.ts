@@ -11,6 +11,7 @@ import { DatabaseConfig } from './common/utils';
 import { Users } from './users/entities';
 import { ScriptModule } from './script/modules';
 import { Script, ScriptState } from './script/entities';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -45,6 +46,6 @@ import { Script, ScriptState } from './script/entities';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtService],
 })
 export class AppModule {}

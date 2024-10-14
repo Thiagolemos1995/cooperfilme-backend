@@ -11,11 +11,13 @@ import {
 } from '../usecases';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Script, ScriptState } from '../entities';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Script, ScriptState])],
   controllers: [ScriptController],
   providers: [
+    JwtService,
     ScriptService,
     ScriptRepository,
     SendScriptUseCase,

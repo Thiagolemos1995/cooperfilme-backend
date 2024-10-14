@@ -102,9 +102,6 @@ export class ScriptRepository {
 
       const scriptStatusResponseDto = new ScriptStatusResponseDto({
         title: script.title,
-        author: script.author,
-        genre: script.genre,
-        email: script.email,
         status: script.status,
         createdAt: script.createdAt,
       });

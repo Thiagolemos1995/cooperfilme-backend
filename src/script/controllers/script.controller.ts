@@ -7,6 +7,7 @@ import {
   Get,
   Param,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import {
   FindAllScriptsUseCase,
@@ -21,6 +22,7 @@ import {
   ScriptStatusResponseDto,
 } from '../dtos';
 import { EScriptState } from '../enums';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('script')
 export class ScriptController {
@@ -32,6 +34,7 @@ export class ScriptController {
     private readonly getScriptStatusUseCase: GetScriptStatusUseCase,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Get()
   async fetchScripts(@Param() params: ScriptFilter) {
     return await this.findAllScripts.execute(params);
@@ -44,6 +47,7 @@ export class ScriptController {
     return await this.getScriptStatusUseCase.execute(id);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   async fetchScriptById(@Param('id') id: string) {
     return await this.findScriptById.execute(id);
@@ -55,6 +59,7 @@ export class ScriptController {
     return await this.sendScriptUseCase.execute(payload);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id/status')
   async updateScriptStatus(
     @Param('id') id: string,
