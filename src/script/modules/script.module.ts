@@ -6,6 +6,7 @@ import {
   FindAllScriptsUseCase,
   FindScriptByIdUseCase,
   SendScriptUseCase,
+  UpdateScriptStatusUseCase,
 } from '../usecases';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Script, ScriptState } from '../entities';
@@ -19,6 +20,7 @@ import { Script, ScriptState } from '../entities';
     SendScriptUseCase,
     FindAllScriptsUseCase,
     FindScriptByIdUseCase,
+    UpdateScriptStatusUseCase,
   ],
 })
 export class ScriptModule {}

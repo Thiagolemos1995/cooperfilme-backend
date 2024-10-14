@@ -3,6 +3,7 @@ import { CreateScriptDto, ScriptFilter } from '../dtos';
 import { Script } from '../entities';
 import { ScriptRepository } from '../repositories';
 import { Logger } from '@nestjs/common';
+import { EScriptState } from '../enums';
 
 @Injectable()
 export class ScriptService {
@@ -22,5 +23,13 @@ export class ScriptService {
   async findById(id: string): Promise<Script> {
     this.logger.log(`Searching for a script with id: ${id}`);
     return await this.scriptRepository.findById(id);
+  }
+
+  async updateScriptStatus(
+    id: string,
+    newStatus: EScriptState,
+  ): Promise<Script> {
+    this.logger.log(`Updating status of script with id: ${id} to ${newStatus}`);
+    return await this.scriptRepository.updateScriptStatus(id, newStatus);
   }
 }

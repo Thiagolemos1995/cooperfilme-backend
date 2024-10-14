@@ -115,4 +115,36 @@ export class ScriptRepository {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async updateScriptStatus(
+    id: string,
+    newStatus: EScriptState,
+  ): Promise<Script> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const script = await queryRunner.manager.findOne(Script, {
+        where: { id },
+      });
+
+      if (!script) {
+        throw new Error('Script not found');
+      }
+
+      script.status = newStatus;
+      await queryRunner.manager.save(script);
+
+      await queryRunner.commitTransaction();
+
+      return script;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }
