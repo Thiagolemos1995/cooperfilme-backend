@@ -1,6 +1,23 @@
 version: '3.8'
 
 services:
+  cooperfilme_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cooperfilme_backend
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - DATABASE_HOST=cooperfilme_db
+    depends_on:
+      - cooperfilme_db
+    networks:
+      - cooperfilme_network
+
   cooperfilme_db:
     ports:
       - '5435:5432'
@@ -17,7 +34,6 @@ services:
 
 networks:
   cooperfilme_network:
-    driver: bridge
 
 volumes:
   cooperfilme_data:
