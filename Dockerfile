@@ -1,32 +1,51 @@
 # Step 1: Build the application
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS development
 
 WORKDIR /app
 
 # Install dependencies
-COPY package*.json ./
-RUN npm install
+COPY --chown=node:node package.json ./
+COPY --chown=node:node tsconfig*.json ./
+COPY yarn.lock ./
+RUN yarn install
 
 # Copy the rest of the application code
-COPY . .
+COPY --chown=node:node . .
+
+USER node
 
 # Build the application
-RUN npm run build
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+COPY --chown=node:node package.json ./
+COPY --chown=node:node tsconfig*.json ./
+COPY yarn.lock ./
+COPY --chown=node:node --from=development /app/node_modules ./node_modules
+
+COPY --chown=node:node . .
+
+RUN yarn build
+
+ENV NODE_ENV production
+
+RUN yarn install --production --frozen-lockfile && yarn cache clean
+
+USER node
 
 # Step 2: Create the production image
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
 # Copy only the necessary files from the builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
+COPY --chown=node:node --from=build /app/node_modules ./node_modules
 
-# Install only production dependencies
-RUN npm install --only=production
+COPY --chown=node:node --from=build /app/dist ./dist
 
 # Expose the application port
 EXPOSE 3000
 
 # Start the application
-CMD npm run typeorm -- migration:run -d /dist/ormconfig.js && node dist/main.js
+CMD node dist/main.js

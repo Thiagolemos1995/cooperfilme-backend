@@ -6,7 +6,7 @@ export default new DataSource({
   port: parseInt(process.env.DATABASE_PORT) || 5435,
   username: process.env.DATABASE_USER || 'cooperfilme',
   password: process.env.DATABASE_PASSWORD || 'cooperfilme',
-  database: process.env.DATABASE_DB || 'cooperfilme_db',
+  database: process.env.DATABASE_DB || 'cooperfilme_svc_db',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/**/**/migrations/*.ts'],
   synchronize: false,
