@@ -48,4 +48,4 @@ COPY --chown=node:node --from=build /app/dist ./dist
 EXPOSE 3000
 
 # Start the application
-CMD node dist/main.js
+CMD npx typeorm migration:run -d dist/ormconfig.js -- -m dist/commons/migration && node dist/main.js

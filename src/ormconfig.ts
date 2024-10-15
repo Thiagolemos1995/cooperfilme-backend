@@ -8,6 +8,6 @@ export default new DataSource({
   password: process.env.DATABASE_PASSWORD || 'cooperfilme',
   database: process.env.DATABASE_DB || 'cooperfilme_svc_db',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  migrations: [__dirname + '/**/**/migrations/*.ts'],
+  migrations: [__dirname + '/**/**/migrations/*{.ts,.js}'],
   synchronize: false,
 });
